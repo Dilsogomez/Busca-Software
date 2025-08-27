@@ -7,9 +7,10 @@ interface SoftwareGridProps {
     softwareList: Software[];
     isLoading: boolean;
     error: string | null;
+    searchTerm: string;
 }
 
-export const SoftwareGrid: React.FC<SoftwareGridProps> = ({ softwareList, isLoading, error }) => {
+export const SoftwareGrid: React.FC<SoftwareGridProps> = ({ softwareList, isLoading, error, searchTerm }) => {
     if (error) {
         return (
             <div className="text-center text-red-600 bg-red-100 p-4 rounded-lg">
@@ -30,9 +31,14 @@ export const SoftwareGrid: React.FC<SoftwareGridProps> = ({ softwareList, isLoad
     }
     
     if (softwareList.length === 0) {
+        const hasShortSearchTerm = searchTerm.length > 0 && searchTerm.length < 3;
         return (
             <div className="text-center text-gray-600 py-16">
-                <p>Nenhum software encontrado com os filtros selecionados.</p>
+                <p>
+                    {hasShortSearchTerm
+                        ? 'Continue digitando para iniciar a busca (mínimo 3 caracteres).'
+                        : 'Nenhum software encontrado com os filtros selecionados.'}
+                </p>
             </div>
         );
     }

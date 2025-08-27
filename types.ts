@@ -12,6 +12,7 @@ export interface Software {
     brazilian: boolean;
     website: string;
     rating: number;
+    userCount: string;
 }
 
 export type FilterOption = 'todos' | 'ia' | 'empresarial' | 'gratuitos' | 'pagos' | 'brasileiros';

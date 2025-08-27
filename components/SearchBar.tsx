@@ -1,20 +1,12 @@
-
 import React from 'react';
 
 interface SearchBarProps {
     searchTerm: string;
     setSearchTerm: (term: string) => void;
-    onSearch: () => void;
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, setSearchTerm, onSearch }) => {
+export const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, setSearchTerm }) => {
     
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-            onSearch();
-        }
-    };
-
     return (
         <div className="relative">
             <div className="pointer-events-none absolute inset-y-0 left-0 pl-4 flex items-center">
@@ -26,7 +18,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({ searchTerm, setSearchTerm,
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={handleKeyDown}
                 placeholder="Busque por nome, recurso, IA, stack, categoria..."
                 className="w-full pl-11 pr-4 py-3 text-base text-gray-900 bg-white border-2 border-gray-300 rounded-lg shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-gray-800 transition-colors"
             />

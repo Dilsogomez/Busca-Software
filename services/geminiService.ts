@@ -48,9 +48,13 @@ const softwareSchema = {
             rating: {
                 type: Type.NUMBER,
                 description: "The software's average user rating out of 5, based on Google or other popular review sites. Should be a number (e.g., 4.5). If no rating is found, return 0."
+            },
+            userCount: {
+                type: Type.STRING,
+                description: "An approximate number of users or downloads for the software as a concise string (e.g., '1M+ usuários', '500k+ downloads', '10k+ empresas'). If not publicly available, return an empty string."
             }
         },
-        required: ["name", "description", "tags", "price", "iconClass", "brazilian", "website", "rating"],
+        required: ["name", "description", "tags", "price", "iconClass", "brazilian", "website", "rating", "userCount"],
     },
 };
 
@@ -118,7 +122,7 @@ const buildPrompt = (searchTerm: string, filter: FilterOption): string => {
             break;
     }
 
-    prompt += "\n\nReturn a JSON array of up to 12 results that strictly follows the provided schema. For each software, include its average user rating out of 5 (e.g., from Google Reviews). For the 'iconClass', choose the most fitting category from the list. Ensure the 'website' URL is the official homepage.";
+    prompt += "\n\nReturn a JSON array of up to 12 results that strictly follows the provided schema. For each software, include its average user rating out of 5 (e.g., from Google Reviews) and an approximate user count (e.g., '1M+ usuários'). For the 'iconClass', choose the most fitting category from the list. Ensure the 'website' URL is the official homepage.";
     
     return prompt;
 };

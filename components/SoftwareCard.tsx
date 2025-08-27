@@ -24,12 +24,22 @@ export const SoftwareCard: React.FC<SoftwareCardProps> = ({ software, index }) =
             </div>
             <p className="text-gray-600 text-sm mb-4 flex-grow">{software.description}</p>
             
-            {software.rating > 0 && (
-                <div className="flex items-center gap-2 mb-4">
-                    <StarRating rating={software.rating} />
-                    <span className="text-xs text-gray-500 font-medium">{software.rating.toFixed(1)}</span>
-                </div>
-            )}
+            <div className="flex items-center flex-wrap gap-x-4 gap-y-2 mb-4">
+                {software.rating > 0 && (
+                    <div className="flex items-center gap-2" title={`${software.rating.toFixed(1)} de 5 estrelas`}>
+                        <StarRating rating={software.rating} />
+                        <span className="text-xs text-gray-500 font-medium">{software.rating.toFixed(1)}</span>
+                    </div>
+                )}
+                {software.userCount && (
+                    <div className="flex items-center gap-1.5 text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-gray-400">
+                            <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
+                        </svg>
+                        <span className="text-xs font-medium">{software.userCount}</span>
+                    </div>
+                )}
+            </div>
 
             <div className="mt-auto pt-4 border-t border-gray-100">
                 <div className="flex flex-wrap gap-2 mb-4">
@@ -65,7 +75,10 @@ export const SoftwareCardSkeleton: React.FC = () => (
             <div className="h-3 bg-gray-200 rounded w-5/6"></div>
         </div>
         
-        <div className="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
+        <div className="flex items-center gap-4 mb-4">
+            <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+        </div>
 
         <div className="mt-auto pt-4 border-t border-gray-100">
             <div className="flex flex-wrap gap-2 mb-4">

@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { Header } from './components/Header';
 import { SearchBar } from './components/SearchBar';
@@ -8,6 +9,27 @@ import type { Software, FilterOption } from './types';
 import { findSoftware } from './services/geminiService';
 import { FILTERS } from './constants';
 
+// FIX: Added a trailing comma inside the generic type parameter list (`<T,>`).
+// In `.tsx` files, this is necessary to distinguish a generic arrow function's
+// type parameters from a JSX tag, resolving a parser ambiguity that caused
+// a cascade of errors throughout this component.
+const useDebounce = <T,>(value: T, delay: number): T => {
+    const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+
+    return debouncedValue;
+};
+
+
 const App: React.FC = () => {
     const [softwareList, setSoftwareList] = useState<Software[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
@@ -15,6 +37,8 @@ const App: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [activeView, setActiveView] = useState('catalog');
+
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
     const handleSearch = useCallback(async (term: string, filter: FilterOption) => {
         setIsLoading(true);
@@ -32,20 +56,25 @@ const App: React.FC = () => {
     }, []);
     
     useEffect(() => {
-        // Initial search on component mount only for catalog view
-        if (activeView === 'catalog') {
-            handleSearch('', 'todos');
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeView]);
+        if (activeView !== 'catalog') return;
 
-    const onSearchSubmit = () => {
-        handleSearch(searchTerm, activeFilter);
-    };
+        // A search is valid if the term is empty (for the initial/default view)
+        // or if the term has 3 or more characters. This prevents API calls for
+        // very short, incomplete terms, fixing the 429 rate limit error.
+        const isSearchTermValid = debouncedSearchTerm.length === 0 || debouncedSearchTerm.length >= 3;
+
+        if (isSearchTermValid) {
+            handleSearch(debouncedSearchTerm, activeFilter);
+        } else {
+            // If the term is too short (1-2 chars), clear results without hitting the API.
+            setIsLoading(false);
+            setError(null);
+            setSoftwareList([]);
+        }
+    }, [debouncedSearchTerm, activeFilter, activeView, handleSearch]);
 
     const onFilterChange = (filter: FilterOption) => {
         setActiveFilter(filter);
-        handleSearch(searchTerm, filter);
     };
 
     return (
@@ -66,8 +95,7 @@ const App: React.FC = () => {
                         <div className="mb-8 max-w-2xl mx-auto">
                             <SearchBar 
                                 searchTerm={searchTerm} 
-                                setSearchTerm={setSearchTerm} 
-                                onSearch={onSearchSubmit} 
+                                setSearchTerm={setSearchTerm}
                             />
                         </div>
 
@@ -87,6 +115,7 @@ const App: React.FC = () => {
                                 softwareList={softwareList} 
                                 isLoading={isLoading} 
                                 error={error} 
+                                searchTerm={searchTerm}
                             />
                         </div>
                     </>
